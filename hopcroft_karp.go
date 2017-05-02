@@ -1,11 +1,14 @@
 package matching
 
+type Matching map[Node]Node
+
 type internals struct {
-  matchLR map[Node]Node
-  matchRL map[Node]Node
+  matchLR Matching
+  matchRL Matching
   lev map[Node]int
   G Graph
 }
+
 
 func bfs(state *internals) bool {
   L := make(set)
@@ -55,11 +58,11 @@ func dfs(l Node, targl int, state *internals) bool {
   return false
 }
 
-func HopcroftKarp(G Graph) (nmatch int, matchLR map[Node]Node,
-  matchRL map[Node]Node) {
+func HopcroftKarp(G Graph) (nmatch int, matchLR Matching,
+  matchRL Matching) {
   nmatch = 0
-  matchLR = make(map[Node]Node)
-  matchRL = make(map[Node]Node)
+  matchLR = make(Matching)
+  matchRL = make(Matching)
   state := internals{matchLR, matchRL, make(map[Node]int), G}
   for bfs(&state) {
     for l := range(G) {
