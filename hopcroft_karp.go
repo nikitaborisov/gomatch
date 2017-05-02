@@ -8,37 +8,32 @@ type internals struct {
 }
 
 func bfs(state *internals) bool {
-  L := make([]Node, 0)
+  L := make(set)
   state.lev = make(map[Node]int)
   for node, _ := range state.G {
     if _, ok := state.matchLR[node]; !ok {
-      L = append(L, node)
+      L.add(node)
     }
   }
   depth := 0
-  seen := make(map[Node]bool)
+  seen := make(set)
   for len(L) > 0 {
-    for _, l := range L {
+    for l := range L {
       state.lev[l] = depth
     }
-    L1 := make(map[Node]bool)
-    for _, l := range L {
+    L1 := make(set)
+    for l := range L {
       for _, r := range state.G[l] {
-        if _, ok := seen[r]; !ok {
-            seen[r] = true
+        if !seen.in(r) {
+            seen.add(r)
             if _, ok2 := state.matchRL[r]; !ok2 {
               return true
             }
-            L1[state.matchRL[r]] = true
+            L1.add(state.matchRL[r])
         }
       }
       depth += 1
-      L = make([]Node, len(L1))
-      i := 0
-      for node, _ := range L1 {
-        L[i] = node
-        i++
-      }
+      L = L1
     }
   }
   return false
