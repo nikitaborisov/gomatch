@@ -1,38 +1,82 @@
 package matching
 
+import (
+    "github.com/looplab/tarjan"
+)
+
 type derived_node struct {
-  left_node Node
-  right_node Node
+   index int
 }
 
-type derived_graph map[derived_node]([]derived_node)
 
-func make_derived_graph(G Graph, M Matching) (H derived_graph) {
-  left_nodes := make([]Node, len(G))
-  i := 0
-  for n := range G {
-    left_nodes[i] = n
-    i++
-  }
-  right_indices := make(map[Node]int, len(G))
+
+// to match with tarjan's graph structure
+type derived_graph map[interface{}]([]interface{})
+
+func make_derived_graph(left_nodes []Node, right_indices map[Node]int,
+  G Graph, M Matching) (H derived_graph) {
   H = make(derived_graph)
-  for i, n := range left_nodes {
-    right_indices[n] = i
-    H[derived_node{n,M[n]}] = make([]derived_node, 0)
+  for i, _ := range left_nodes {
+    H[derived_node{i}] = make([]interface{}, 0)
   }
 
-  for _, ln := range left_nodes {
-    cur_node := derived_node{ln,M[ln]}
+  for i, ln := range left_nodes {
+    cur_node := derived_node{i}
     for _, rn := range G[ln] {
       if rn == M[ln] {
         // skip self-links
         continue
       }
-      index := right_indices[rn]
-      dest_ln := left_nodes[index]
-      dest_node := derived_node{dest_ln,M[dest_ln]}
+      ri := right_indices[rn]
+      dest_node := derived_node{ri}
       H[cur_node] = append(H[cur_node], dest_node)
     }
   }
   return
+}
+
+func left_right_nodes(G Graph, M Matching) (left_nodes []Node,
+  right_nodes []Node, right_indices map[Node]int) {
+  left_nodes = make([]Node, len(G))
+  right_nodes = make([]Node, len(M))
+  right_indices = make(map[Node]int, len(M))
+  li := 0
+
+  for left, right := range M {
+    left_nodes[li] = left
+    right_nodes[li] = right
+    right_indices[right] = li
+    li += 1
+  }
+
+  ri := li
+  for left, rights := range G {
+    if _, ok := M[left]; !ok {
+      left_nodes[li] = left
+      li += 1
+    }
+    for _, right := range rights {
+      if _, ok := right_indices[right]; !ok {
+        right_nodes = append(right_nodes, right)
+        right_indices[right] = ri
+        ri += 1
+      }
+    }
+  }
+  return
+}
+
+func list_matchable(G Graph, M Matching) []Node {
+  left_nodes, right_nodes, right_indices := left_right_nodes(G, M)
+  DG := make_derived_graph(left_nodes, right_indices, G, M)
+  components := tarjan.Connections(DG)
+  comp_index := make(map[interface{}]int)
+  for i, comp := range components {
+    for _, node := range comp {
+      comp_index[node] = i
+    }
+  }
+
+  _ = right_nodes
+  return make([]Node, 0)
 }
