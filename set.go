@@ -1,4 +1,4 @@
-package matching
+package gomatch
 
 // a set of nodes
 type set map[Node]struct{}

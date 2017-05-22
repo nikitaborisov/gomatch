@@ -1,4 +1,4 @@
-package matching
+package gomatch
 
 import (
   "testing"
@@ -52,6 +52,6 @@ func TestMatchable(t *testing.T) {
     G[LN[i]] = []Node{RN[i],RN[(i+1)%4]}
     M[LN[i]] = RN[i]
   }
-  matchable := list_matchable(G, M)
-  fmt.Println("Matchable edges", matchable)  
+  matchable := MatchableEdges(G, M)
+  fmt.Println("Matchable edges", matchable)
 }

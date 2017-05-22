@@ -1,4 +1,4 @@
-package matching
+package gomatch
 
 type Matching map[Node]Node
 

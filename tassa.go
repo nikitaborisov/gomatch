@@ -1,4 +1,4 @@
-package matching
+package gomatch
 
 import (
     "github.com/looplab/tarjan"
@@ -67,11 +67,11 @@ func left_right_nodes(G Graph, M Matching) (left_nodes []Node,
 }
 
 type edge struct {
-  to Node
-  from Node
+  From Node
+  To Node
 }
 
-func list_matchable(G Graph, M Matching) (matchable []edge) {
+func MatchableEdges(G Graph, M Matching) (matchable []edge) {
   left_nodes, right_nodes, right_indices := left_right_nodes(G, M)
   DG := make_derived_graph(left_nodes, right_indices, G, M)
   components := tarjan.Connections(DG)

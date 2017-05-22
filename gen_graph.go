@@ -1,4 +1,4 @@
-package matching
+package gomatch
 
 import (
   "math/rand"
