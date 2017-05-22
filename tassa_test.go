@@ -41,5 +41,17 @@ func TestLeftRight(t *testing.T) {
   }
   left_nodes, right_nodes, right_indices := left_right_nodes(G, M)
   fmt.Println(left_nodes, right_nodes, right_indices)
+}
 
+func TestMatchable(t *testing.T) {
+  G := make(Graph)
+  LN := []Node{Node{"1"}, Node{"2"}, Node{"3"}, Node{"4"}}
+  RN := []Node{Node{"10"}, Node{"11"}, Node{"12"}, Node{"13"}}
+  M := make(Matching)
+  for i := 0; i < 4; i++ {
+    G[LN[i]] = []Node{RN[i],RN[(i+1)%4]}
+    M[LN[i]] = RN[i]
+  }
+  matchable := list_matchable(G, M)
+  fmt.Println("Matchable edges", matchable)  
 }

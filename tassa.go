@@ -66,7 +66,12 @@ func left_right_nodes(G Graph, M Matching) (left_nodes []Node,
   return
 }
 
-func list_matchable(G Graph, M Matching) []Node {
+type edge struct {
+  to Node
+  from Node
+}
+
+func list_matchable(G Graph, M Matching) (matchable []edge) {
   left_nodes, right_nodes, right_indices := left_right_nodes(G, M)
   DG := make_derived_graph(left_nodes, right_indices, G, M)
   components := tarjan.Connections(DG)
@@ -76,7 +81,20 @@ func list_matchable(G Graph, M Matching) []Node {
       comp_index[node] = i
     }
   }
-
-  _ = right_nodes
-  return make([]Node, 0)
+  matchable = make([]edge, len(M))
+  i := 0
+  for l, r := range M {
+    matchable[i] = edge{l, r}
+    i += 1
+  }
+  for n, edges := range DG {
+    left_index := n.(derived_node).index
+    for _, e := range edges {
+      if comp_index[n] == comp_index[e] {
+        right_index := e.(derived_node).index
+        matchable = append(matchable, edge{left_nodes[left_index], right_nodes[right_index]})
+      }
+    }
+  }
+  return
 }
